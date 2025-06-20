@@ -8,6 +8,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.metrics import mean_squared_error, r2_score
 from pathlib import Path
+import pickle
 
 script_dir = Path(__file__).parent
 data_file_path = script_dir.parent / 'data' / 'insurance.csv'
@@ -59,7 +60,7 @@ grid_search = GridSearchCV(
     full_pipeline, 
     param_grid,
     cv=5, # number of cross-validation folds, in other words, how many times the model will be trained and tested on different subsets of the data
-    scoring='neg_mean_squared_error', # the metric used to evaluate the model performance, this is the negative mean squared error, so we want to minimize it
+    scoring='neg_root_mean_squared_error',
     n_jobs=-1, # number of jobs to run in parallel, -1 means using all processors
     verbose=1 
 ) 
@@ -85,12 +86,9 @@ print(f"R2: {r2}")
 
 
 # Saving the model with pickle
+model_save_path = script_dir / 'premium_predictor_model.pkl'
 
-import pickle
-
-prediction_model = 'premium_predictor_model.pkl'
-
-with open(prediction_model, 'wb') as file:
+with open(model_save_path, 'wb') as file:
     pickle.dump(best_model, file)
 
-print(f'\n Model saved as {prediction_model}')
+print(f'\n Model saved as {model_save_path}')
